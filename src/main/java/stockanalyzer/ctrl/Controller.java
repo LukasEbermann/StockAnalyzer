@@ -1,27 +1,86 @@
 package stockanalyzer.ctrl;
 
+import yahooApi.YahooFinance;
+import yahooApi.beans.QuoteResponse;
+import yahooApi.beans.YahooResponse;
+import yahoofinance.Stock;
+import yahoofinance.histquotes.HistoricalQuote;
+import yahoofinance.histquotes.Interval;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+
 public class Controller {
-		
-	public void process(String ticker) {
-		System.out.println("Start process");
 
-		//TODO implement Error handling 
+    public ArrayList<String> process(String ticker) throws IOException {
+        System.out.println("Start process");
 
-		//TODO implement methods for
-		//1) Daten laden
-		//2) Daten Analyse
+        ArrayList<String> data = new ArrayList<>(getData(ticker));
 
-	}
-	
+        Stock stock = null;
 
-	public Object getData(String searchString) {
+        Calendar from = Calendar.getInstance();
+        from.add(Calendar.WEEK_OF_MONTH, -2);
 
-		
-		return null;
-	}
+        stock = yahoofinance.YahooFinance.get(ticker);
+        List<HistoricalQuote> h = stock.getHistory(from, Interval.DAILY);
+
+        data.add("Number of records " + getRecords(h));
+        data.add("MAX: " + getMax(h));
+        data.add("AVERAGE: " + getAverage(h));
+
+        return data;
 
 
-	public void closeConnection() {
-		
-	}
+    }
+
+    public ArrayList<String> getData(String searchString) throws IOException {
+
+        ArrayList<String> data = new ArrayList<>();
+        YahooFinance yahooFinance = new YahooFinance();
+        ArrayList<String> tickers = new ArrayList<>();
+        tickers.add(searchString);
+        YahooResponse yahooResponse = yahooFinance.getCurrentData(tickers);
+        QuoteResponse quotes = yahooResponse.getQuoteResponse();
+
+        quotes.getResult()
+                .forEach(q -> data.add("Name: " + q.getLongName()));
+        quotes.getResult()
+                .forEach(q -> data.add("Current: " + q.getAsk().toString()));
+
+        return data;
+    }
+
+
+    public double getRecords(List<HistoricalQuote> history) {
+
+        return (int) history.stream()
+                .mapToDouble(q -> q.getClose().intValue())
+                .count();
+
+
+    }
+
+    public double getMax(List<HistoricalQuote> history) {
+
+
+        return history.stream()
+                .mapToDouble(q -> q.getClose().doubleValue())
+                .max()
+                .orElse(0.0);
+
+    }
+
+    public double getAverage(List<HistoricalQuote> history) {
+
+        return history.stream()
+                .mapToDouble(q -> q.getClose().doubleValue())
+                .average()
+                .orElse(0.0);
+
+    }
+
 }
