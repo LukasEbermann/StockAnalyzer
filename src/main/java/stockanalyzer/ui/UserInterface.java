@@ -4,9 +4,12 @@ package stockanalyzer.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import stockanalyzer.ctrl.Controller;
+import stockanalyzer.downloader.ParallelDownloader;
+import stockanalyzer.downloader.SequentialDownloader;
 
 public class UserInterface 
 {
@@ -75,15 +78,59 @@ public class UserInterface
 		
 	}
 
+	public void getDataForDownloadSeq(){
+
+		ArrayList<String> tickerList = new ArrayList<>();
+		tickerList.add("AAPL");
+		tickerList.add("AMZN");
+		tickerList.add("MC.PA");
+		tickerList.add("TSLA");
+		tickerList.add("GOOG");
+		tickerList.add("NKE");
+		tickerList.add("YHOO");
+		tickerList.add("SBUX");
+
+		SequentialDownloader seq = new SequentialDownloader();
+
+		long startTime = System.currentTimeMillis();
+		ctrl.downloadTickers(seq, tickerList);
+		long stopTime = System.currentTimeMillis();
+
+		System.out.println((stopTime - startTime) + "ms");
+	}
+
+	public void getDataForDownloadPar(){
+
+		ArrayList<String> tickerList = new ArrayList<>();
+		tickerList.add("AAPL");
+		tickerList.add("AMZN");
+		tickerList.add("MC.PA");
+		tickerList.add("TSLA");
+		tickerList.add("GOOG");
+		tickerList.add("NKE");
+		tickerList.add("YHOO");
+		tickerList.add("SBUX");
+
+		ParallelDownloader seq = new ParallelDownloader();
+
+		long startTime = System.currentTimeMillis();
+		ctrl.downloadTickers(seq, tickerList);
+		long stopTime = System.currentTimeMillis();
+
+		System.out.println((stopTime - startTime) + "ms");
+	}
+
 
 	public void start() {
-		Menu<Runnable> menu = new Menu<>("User Interfacx");
+		Menu<Runnable> menu = new Menu<>("User Interface");
 		menu.setTitel("Wählen Sie aus:");
 		menu.insert("a", "APPLE 	(AAPL)  Data:", this::getDataFromCtrl1);
 		menu.insert("b", "AMAZON 	(AMZN)  Data:", this::getDataFromCtrl2);
 		menu.insert("c", "MOET 	(MC.PA) Data:", this::getDataFromCtrl3);
 		menu.insert("d", "TESLA 	(TSLA)  Data:",this::getDataFromCtrl4);
 		menu.insert("z", "Choice User Input:",this::getDataForCustomInput);
+		menu.insert("s", "Sequential Download", this::getDataForDownloadSeq);
+		menu.insert("p", "Parallel Download", this::getDataForDownloadPar);
 		menu.insert("q", "Quit:", null);
 		Runnable choice;
 		while ((choice = menu.exec()) != null) {

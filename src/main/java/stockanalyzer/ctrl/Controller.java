@@ -1,5 +1,6 @@
 package stockanalyzer.ctrl;
 
+import stockanalyzer.downloader.Downloader;
 import yahooApi.YahooFinance;
 import yahooApi.beans.QuoteResponse;
 import yahooApi.beans.YahooResponse;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Controller {
@@ -81,6 +83,10 @@ public class Controller {
                 .average()
                 .orElse(0.0);
 
+    }
+
+    public void downloadTickers(Downloader down, ArrayList<String> ticker){
+        down.process(ticker);
     }
 
 }
