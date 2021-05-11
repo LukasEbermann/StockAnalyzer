@@ -35,8 +35,6 @@ public class Controller {
         data.add("AVERAGE: " + getAverage(h));
 
         return data;
-
-
     }
 
     public ArrayList<String> getData(String searchString) throws IOException {

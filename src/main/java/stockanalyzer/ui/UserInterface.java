@@ -13,7 +13,6 @@ import stockanalyzer.downloader.SequentialDownloader;
 
 public class UserInterface 
 {
-
 	private Controller ctrl = new Controller();
 
 	public void getDataFromCtrl1() {
